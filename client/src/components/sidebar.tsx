@@ -70,18 +70,17 @@ export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
         <ul className="space-y-1">
           {routes.map((route) => (
             <li key={route.href}>
-              <Link href={route.href}>
-                <a 
-                  className={cn(
-                    "flex items-center p-3 rounded-md mb-1 transition-colors",
-                    route.active 
-                      ? "text-primary bg-blue-50"
-                      : "text-foreground hover:bg-gray-100"
-                  )}
-                >
-                  <route.icon className="mr-3 h-5 w-5" />
-                  <span>{route.label}</span>
-                </a>
+              <Link 
+                href={route.href} 
+                className={cn(
+                  "flex items-center p-3 rounded-md mb-1 transition-colors",
+                  route.active 
+                    ? "text-primary bg-blue-50"
+                    : "text-foreground hover:bg-gray-100"
+                )}
+              >
+                <route.icon className="mr-3 h-5 w-5" />
+                <span>{route.label}</span>
               </Link>
             </li>
           ))}

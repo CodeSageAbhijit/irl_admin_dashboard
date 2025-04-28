@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/header";
 import Sidebar from "@/components/sidebar";
 import InventoryTable from "@/components/inventory-table";
-import InventorySummary from "@/components/inventory-summary";
 import AddItemForm from "@/components/add-item-form";
 import EditItemForm from "@/components/edit-item-form";
 import DeleteItemDialog from "@/components/delete-item-dialog";
@@ -11,7 +10,6 @@ import Footer from "@/components/footer";
 import { Item } from "@shared/schema";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { 
   Select, 
   SelectContent, 
@@ -19,7 +17,7 @@ import {
   SelectTrigger, 
   SelectValue 
 } from "@/components/ui/select";
-import { Download, Upload, Plus, Search } from "lucide-react";
+import { Plus } from "lucide-react";
 
 export default function Dashboard() {
   const [showAddModal, setShowAddModal] = useState(false);
@@ -31,9 +29,11 @@ export default function Dashboard() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [sidebarMobile, setSidebarMobile] = useState(false);
   
-  const { data: items, isLoading, error } = useQuery({
+  const { data, isLoading, error } = useQuery<Item[]>({
     queryKey: ['/api/items'],
   });
+  
+  const items = data || [];
 
   const handleEditItem = (item: Item) => {
     setSelectedItem(item);
@@ -45,7 +45,7 @@ export default function Dashboard() {
     setShowDeleteDialog(true);
   };
 
-  const filteredItems = items?.filter((item: Item) => {
+  const filteredItems = items.filter((item) => {
     const matchesSearch = searchQuery === "" || 
       item.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
       item.itemId.toLowerCase().includes(searchQuery.toLowerCase());
@@ -76,12 +76,6 @@ export default function Dashboard() {
             <div className="flex flex-wrap gap-2">
               <Button onClick={() => setShowAddModal(true)}>
                 <Plus className="mr-2 h-4 w-4" /> Add New Item
-              </Button>
-              <Button variant="outline">
-                <Download className="mr-2 h-4 w-4" /> Export
-              </Button>
-              <Button variant="outline">
-                <Upload className="mr-2 h-4 w-4" /> Import
               </Button>
             </div>
             <div className="flex gap-2">
@@ -127,13 +121,11 @@ export default function Dashboard() {
             </div>
           ) : (
             <InventoryTable 
-              items={filteredItems || []} 
+              items={filteredItems} 
               onEdit={handleEditItem} 
               onDelete={handleDeleteItem}
             />
           )}
-          
-          <InventorySummary items={items || []} />
         </main>
         
         <Footer />

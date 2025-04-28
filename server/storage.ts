@@ -65,8 +65,9 @@ export class MemStorage implements IStorage {
   async createItem(insertItem: InsertItem): Promise<Item> {
     const id = this.itemIdCounter++;
     const itemId = `INV-${String(id).padStart(4, '0')}`;
-    const status = insertItem.quantity > 0 
-      ? (insertItem.quantity <= 10 ? "Low Stock" : "In Stock") 
+    const quantity = insertItem.quantity ?? 0;
+    const status = quantity > 0 
+      ? (quantity <= 10 ? "Low Stock" : "In Stock") 
       : "Out of Stock";
     
     const now = new Date();
@@ -75,8 +76,10 @@ export class MemStorage implements IStorage {
       ...insertItem, 
       id, 
       itemId, 
+      quantity, 
       status, 
-      lastUpdated: now 
+      lastUpdated: now,
+      notes: insertItem.notes ?? null 
     };
     
     this.items.set(id, item);
@@ -91,17 +94,20 @@ export class MemStorage implements IStorage {
     }
     
     // Calculate new status based on updated quantity
-    const status = updateItem.quantity > 0 
-      ? (updateItem.quantity <= 10 ? "Low Stock" : "In Stock") 
+    const quantity = updateItem.quantity ?? item.quantity;
+    const status = quantity > 0 
+      ? (quantity <= 10 ? "Low Stock" : "In Stock") 
       : "Out of Stock";
     
     const now = new Date();
     
     const updatedItem: Item = { 
       ...item, 
-      ...updateItem, 
+      ...updateItem,
+      quantity,
       status, 
-      lastUpdated: now 
+      lastUpdated: now,
+      notes: updateItem.notes ?? item.notes
     };
     
     this.items.set(id, updatedItem);

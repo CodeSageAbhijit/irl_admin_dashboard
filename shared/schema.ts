@@ -25,6 +25,7 @@ export const items = pgTable("items", {
   quantity: integer("quantity").notNull().default(0),
   status: text("status").notNull().default("In Stock"),
   notes: text("notes"),
+  imageUrl: text("image_url"),
   lastUpdated: timestamp("last_updated").notNull().defaultNow(),
 });
 
@@ -33,6 +34,7 @@ export const insertItemSchema = createInsertSchema(items).pick({
   category: true,
   quantity: true,
   notes: true,
+  imageUrl: true,
 });
 
 export const updateItemSchema = createInsertSchema(items).pick({
@@ -40,6 +42,7 @@ export const updateItemSchema = createInsertSchema(items).pick({
   category: true,
   quantity: true,
   notes: true,
+  imageUrl: true,
 });
 
 export type InsertItem = z.infer<typeof insertItemSchema>;

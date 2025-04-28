@@ -79,7 +79,8 @@ export class MemStorage implements IStorage {
       quantity, 
       status, 
       lastUpdated: now,
-      notes: insertItem.notes ?? null 
+      notes: insertItem.notes ?? null,
+      imageUrl: insertItem.imageUrl ?? null
     };
     
     this.items.set(id, item);
@@ -107,7 +108,8 @@ export class MemStorage implements IStorage {
       quantity,
       status, 
       lastUpdated: now,
-      notes: updateItem.notes ?? item.notes
+      notes: updateItem.notes ?? item.notes,
+      imageUrl: updateItem.imageUrl ?? item.imageUrl
     };
     
     this.items.set(id, updatedItem);

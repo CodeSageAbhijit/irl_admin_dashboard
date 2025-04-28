@@ -97,7 +97,7 @@ export default function InventoryTable({ items, onEdit, onDelete }: InventoryTab
   };
   
   return (
-    <div className="bg-white rounded-lg shadow overflow-hidden mb-6">
+    <div className="bg-white overflow-hidden">
       <div className="overflow-x-auto">
         <Table>
           <TableHeader className="bg-gray-50">

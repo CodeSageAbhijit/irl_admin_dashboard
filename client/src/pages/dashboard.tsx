@@ -17,7 +17,13 @@ import {
   SelectTrigger, 
   SelectValue 
 } from "@/components/ui/select";
-import { Plus } from "lucide-react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger
+} from "@/components/ui/accordion";
+import { Plus, Package, ChevronDown, PanelLeftClose } from "lucide-react";
 
 export default function Dashboard() {
   const [showAddModal, setShowAddModal] = useState(false);
@@ -106,26 +112,38 @@ export default function Dashboard() {
             </div>
           </div>
           
-          {isLoading ? (
-            <div className="bg-white rounded-lg shadow mb-6 p-4">
-              <div className="w-full overflow-x-auto">
-                <Skeleton className="h-[400px] w-full rounded-md" />
-              </div>
-            </div>
-          ) : error ? (
-            <div className="bg-white rounded-lg shadow mb-6 p-6 text-center">
-              <p className="text-red-500">Failed to load inventory items. Please try again.</p>
-              <Button onClick={() => window.location.reload()} className="mt-4">
-                Reload
-              </Button>
-            </div>
-          ) : (
-            <InventoryTable 
-              items={filteredItems} 
-              onEdit={handleEditItem} 
-              onDelete={handleDeleteItem}
-            />
-          )}
+          <Accordion type="single" collapsible className="mb-6 shadow-md rounded-lg overflow-hidden">
+            <AccordionItem value="inventory" className="border-0">
+              <AccordionTrigger className="px-6 py-4 bg-blue-50 hover:bg-blue-100 hover:no-underline">
+                <div className="flex items-center text-primary font-medium">
+                  <Package className="mr-2 h-5 w-5" />
+                  <span>Inventory Items ({filteredItems.length})</span>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="p-0 pt-0 pb-0">
+                {isLoading ? (
+                  <div className="p-4">
+                    <div className="w-full overflow-x-auto">
+                      <Skeleton className="h-[400px] w-full rounded-md" />
+                    </div>
+                  </div>
+                ) : error ? (
+                  <div className="p-6 text-center">
+                    <p className="text-red-500">Failed to load inventory items. Please try again.</p>
+                    <Button onClick={() => window.location.reload()} className="mt-4">
+                      Reload
+                    </Button>
+                  </div>
+                ) : (
+                  <InventoryTable 
+                    items={filteredItems} 
+                    onEdit={handleEditItem} 
+                    onDelete={handleDeleteItem}
+                  />
+                )}
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         </main>
         
         <Footer />

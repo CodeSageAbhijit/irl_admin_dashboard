@@ -15,7 +15,8 @@ import {
   Edit, 
   Trash2, 
   ArrowLeft, 
-  ArrowRight 
+  ArrowRight,
+  Package
 } from "lucide-react";
 import { Item } from "@shared/schema";
 import { formatDate, getStatusColor, getCategoryColor } from "@/lib/utils";
@@ -110,6 +111,7 @@ export default function InventoryTable({ items, onEdit, onDelete }: InventoryTab
                   />
                 </div>
               </TableHead>
+              <TableHead className="w-[60px]">Image</TableHead>
               <TableHead className="cursor-pointer hover:text-primary" onClick={() => handleSort("id")}>
                 <div className="flex items-center">
                   <span>ID</span>
@@ -152,7 +154,7 @@ export default function InventoryTable({ items, onEdit, onDelete }: InventoryTab
           <TableBody>
             {paginatedItems.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center py-8">
+                <TableCell colSpan={9} className="text-center py-8">
                   No inventory items found.
                 </TableCell>
               </TableRow>
@@ -165,6 +167,33 @@ export default function InventoryTable({ items, onEdit, onDelete }: InventoryTab
                       onCheckedChange={() => handleSelectItem(item.id)}
                       aria-label={`Select item ${item.id}`}
                     />
+                  </TableCell>
+                  <TableCell>
+                    {item.imageUrl ? (
+                      <div className="w-10 h-10 relative rounded overflow-hidden">
+                        <img 
+                          src={item.imageUrl} 
+                          alt={item.name} 
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            const target = e.currentTarget as HTMLImageElement;
+                            target.onerror = null;
+                            target.style.display = 'none';
+                            const fallbackIcon = target.parentElement!.querySelector('.fallback-icon') as HTMLElement;
+                            if (fallbackIcon) {
+                              fallbackIcon.style.display = 'flex';
+                            }
+                          }}
+                        />
+                        <div className="fallback-icon hidden absolute inset-0 bg-gray-100 items-center justify-center">
+                          <Package className="h-5 w-5 text-gray-400" />
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center">
+                        <Package className="h-5 w-5 text-gray-400" />
+                      </div>
+                    )}
                   </TableCell>
                   <TableCell className="font-medium">#{item.itemId}</TableCell>
                   <TableCell>{item.name}</TableCell>

@@ -45,6 +45,7 @@ const formSchema = updateItemSchema.extend({
   name: z.string().min(2, "Name must be at least 2 characters").max(100, "Name must be less than 100 characters"),
   quantity: z.coerce.number().int().min(0, "Quantity cannot be negative"),
   notes: z.string().optional(),
+  imageUrl: z.string().url("Must be a valid URL").or(z.literal("")).optional(),
 });
 
 export default function EditItemForm({ open, onOpenChange, item }: EditItemFormProps) {
@@ -58,6 +59,7 @@ export default function EditItemForm({ open, onOpenChange, item }: EditItemFormP
       category: item.category,
       quantity: item.quantity,
       notes: item.notes || "",
+      imageUrl: item.imageUrl || "",
     },
   });
   
@@ -176,6 +178,20 @@ export default function EditItemForm({ open, onOpenChange, item }: EditItemFormP
                   <FormLabel>Notes (Optional)</FormLabel>
                   <FormControl>
                     <Textarea placeholder="Add any additional notes" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="imageUrl"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Image URL (Optional)</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter image URL" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

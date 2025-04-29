@@ -60,7 +60,7 @@ export default function Dashboard() {
   });
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-background text-foreground">
+    <div className="min-h-screen flex flex-col bg-background text-foreground">
       <Sidebar mobileOpen={sidebarMobile} setMobileOpen={setSidebarMobile} />
       
       <div className="flex-1 flex flex-col">

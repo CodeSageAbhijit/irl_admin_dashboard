@@ -11,17 +11,16 @@ type HeaderProps = {
 
 export default function Header({ toggleSidebar, searchValue, onSearchChange }: HeaderProps) {
   return (
-    <header className="bg-white shadow-sm p-4 flex justify-between items-center">
+    <header className="bg-white shadow-sm px-4 py-3 flex justify-between items-center">
       <div className="flex items-center">
         <Button 
           variant="ghost" 
           size="icon" 
-          className="md:hidden mr-4 text-gray-500"
+          className="md:hidden mr-2 text-gray-500"
           onClick={toggleSidebar}
         >
           <Menu className="h-5 w-5" />
         </Button>
-        <h1 className="text-xl font-semibold">Inventory Management</h1>
       </div>
       <div className="flex items-center space-x-4">
         <div className="relative">

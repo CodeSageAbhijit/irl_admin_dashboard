@@ -51,11 +51,11 @@ export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
   
   return (
     <div className={cn(
-      "bg-white shadow-md md:w-64 w-full border-r border-gray-200 md:h-screen flex-shrink-0",
+      "bg-white shadow-md w-full border-b border-gray-200 flex-shrink-0",
       "z-40 transition-all duration-300 ease-in-out",
-      mobileOpen ? "fixed inset-0 h-screen" : "hidden md:block"
+      mobileOpen ? "fixed inset-0 h-screen md:relative md:h-auto" : "block"
     )}>
-      <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+      <div className="p-4 flex items-center justify-between">
         <h1 className="text-xl font-bold text-primary">InventoryPro</h1>
         <button 
           className="md:hidden text-gray-500 hover:text-gray-700"
@@ -66,21 +66,27 @@ export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
           </svg>
         </button>
       </div>
-      <nav className="p-2">
-        <ul className="space-y-1">
+      <nav className="px-4 pb-4">
+        <ul className={cn(
+          "flex",
+          mobileOpen ? "flex-col space-y-2" : "flex-row space-x-4 justify-center md:justify-start"
+        )}>
           {routes.map((route) => (
             <li key={route.href}>
               <Link 
                 href={route.href} 
                 className={cn(
-                  "flex items-center p-3 rounded-md mb-1 transition-colors",
+                  "flex items-center p-2 rounded-md transition-colors",
                   route.active 
                     ? "text-primary bg-blue-50"
                     : "text-foreground hover:bg-gray-100"
                 )}
               >
-                <route.icon className="mr-3 h-5 w-5" />
-                <span>{route.label}</span>
+                <route.icon className={cn(
+                  "h-5 w-5", 
+                  mobileOpen ? "mr-3" : "mr-0 md:mr-2"
+                )} />
+                <span className={mobileOpen ? "block" : "hidden md:block"}>{route.label}</span>
               </Link>
             </li>
           ))}

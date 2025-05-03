@@ -5,7 +5,8 @@ import {
   Package,
   Truck,
   BarChart, 
-  Settings
+  Settings,
+  ClipboardList
 } from "lucide-react";
 
 type SidebarProps = {
@@ -23,6 +24,14 @@ export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
       href: "/",
       active: location === "/"
     },
+
+    {
+      label: "Requests",
+      icon: ClipboardList,
+      href: "/requests",
+      active: location === "/requests"
+    },
+    
     {
       label: "Products",
       icon: Package,

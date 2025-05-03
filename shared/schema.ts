@@ -1,7 +1,8 @@
-import { pgTable, text, serial, integer, boolean, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
+// Users table
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
@@ -16,33 +17,30 @@ export const insertUserSchema = createInsertSchema(users).pick({
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 
-// Inventory items schema
+// Simplified Inventory Items Schema
 export const items = pgTable("items", {
-  id: serial("id").primaryKey(),
-  itemId: text("item_id").notNull().unique(),
-  name: text("name").notNull(),
-  category: text("category").notNull(),
-  quantity: integer("quantity").notNull().default(0),
-  status: text("status").notNull().default("In Stock"),
-  notes: text("notes"),
-  imageUrl: text("image_url"),
-  lastUpdated: timestamp("last_updated").notNull().defaultNow(),
+  id: serial("id").primaryKey(), // Unique identifier
+  name: text("name").notNull(), // Name of the item
+  image_url: text("image_url"), // URL for the item image
+  quantity: integer("quantity").notNull().default(0), // Quantity in stock
 });
 
+
+// Zod schemas
 export const insertItemSchema = createInsertSchema(items).pick({
   name: true,
-  category: true,
+  // category: true,
   quantity: true,
-  notes: true,
-  imageUrl: true,
+  // description: true, // ✅ renamed
+  image_url: true,
 });
 
 export const updateItemSchema = createInsertSchema(items).pick({
   name: true,
-  category: true,
+  // category: true,
   quantity: true,
-  notes: true,
-  imageUrl: true,
+  // description: true, // ✅ renamed
+  image_url: true,
 });
 
 export type InsertItem = z.infer<typeof insertItemSchema>;

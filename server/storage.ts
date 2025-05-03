@@ -1,13 +1,13 @@
+import { FirebaseStorage } from "./firestorage";
+
 import { users, type User, type InsertUser, type Item, type InsertItem, type UpdateItem } from "@shared/schema";
 
-// modify the interface with any CRUD methods
-// you might need
-
+// modify the interface with any CRUD methods you might need
 export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
-  
+
   // Inventory item methods
   getItems(): Promise<Item[]>;
   getItem(id: number): Promise<Item | undefined>;
@@ -57,8 +57,9 @@ export class MemStorage implements IStorage {
   }
 
   async getItemByItemId(itemId: string): Promise<Item | undefined> {
+    let itemid = Number(itemId)
     return Array.from(this.items.values()).find(
-      (item) => item.itemId === itemId
+      (item) => item.id === itemid
     );
   }
 
@@ -69,49 +70,38 @@ export class MemStorage implements IStorage {
     const status = quantity > 0 
       ? (quantity <= 10 ? "Low Stock" : "In Stock") 
       : "Out of Stock";
-    
+
     const now = new Date();
-    
+
     const item: Item = { 
       ...insertItem, 
       id, 
-      itemId, 
       quantity, 
-      status, 
-      lastUpdated: now,
-      notes: insertItem.notes ?? null,
-      imageUrl: insertItem.imageUrl ?? null
+      image_url: insertItem.image_url ?? null
     };
-    
+
     this.items.set(id, item);
     return item;
   }
 
   async updateItem(id: number, updateItem: UpdateItem): Promise<Item | undefined> {
     const item = this.items.get(id);
-    
-    if (!item) {
-      return undefined;
-    }
-    
-    // Calculate new status based on updated quantity
+    if (!item) return undefined;
+
     const quantity = updateItem.quantity ?? item.quantity;
     const status = quantity > 0 
       ? (quantity <= 10 ? "Low Stock" : "In Stock") 
       : "Out of Stock";
-    
+
     const now = new Date();
-    
+
     const updatedItem: Item = { 
       ...item, 
       ...updateItem,
       quantity,
-      status, 
-      lastUpdated: now,
-      notes: updateItem.notes ?? item.notes,
-      imageUrl: updateItem.imageUrl ?? item.imageUrl
+      image_url: updateItem.image_url ?? item.image_url
     };
-    
+
     this.items.set(id, updatedItem);
     return updatedItem;
   }
@@ -121,4 +111,4 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new FirebaseStorage();

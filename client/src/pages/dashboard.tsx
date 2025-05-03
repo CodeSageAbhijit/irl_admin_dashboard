@@ -10,13 +10,6 @@ import Footer from "@/components/footer";
 import { Item } from "@shared/schema";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from "@/components/ui/select";
 import { Plus } from "lucide-react";
 
 export default function Dashboard() {
@@ -25,8 +18,6 @@ export default function Dashboard() {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("all");
-  const [statusFilter, setStatusFilter] = useState("all");
   const [sidebarMobile, setSidebarMobile] = useState(false);
   
   const { data, isLoading, error } = useQuery<Item[]>({
@@ -46,17 +37,8 @@ export default function Dashboard() {
   };
 
   const filteredItems = items.filter((item) => {
-    const matchesSearch = searchQuery === "" || 
-      item.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      item.itemId.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    const matchesCategory = categoryFilter === "all" || 
-      item.category.toLowerCase() === categoryFilter.toLowerCase();
-    
-    const matchesStatus = statusFilter === "all" || 
-      item.status.toLowerCase() === statusFilter.toLowerCase().replace(/-/g, " ");
-    
-    return matchesSearch && matchesCategory && matchesStatus;
+    return searchQuery === "" || 
+      item.name.toLowerCase().includes(searchQuery.toLowerCase());
   });
 
   return (
@@ -71,39 +53,11 @@ export default function Dashboard() {
         />
         
         <main className="flex-1 p-6">
-          {/* Action Bar */}
-          <div className="flex flex-col md:flex-row justify-between mb-6 gap-4">
-            <div className="flex flex-wrap gap-2">
-              <Button onClick={() => setShowAddModal(true)}>
-                <Plus className="mr-2 h-4 w-4" /> Add New Item
-              </Button>
-            </div>
-            <div className="flex gap-2">
-              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="All Categories" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Categories</SelectItem>
-                  <SelectItem value="electronics">Electronics</SelectItem>
-                  <SelectItem value="furniture">Furniture</SelectItem>
-                  <SelectItem value="office supplies">Office Supplies</SelectItem>
-                  <SelectItem value="kitchen">Kitchen</SelectItem>
-                </SelectContent>
-              </Select>
-              
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="All Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="in-stock">In Stock</SelectItem>
-                  <SelectItem value="low-stock">Low Stock</SelectItem>
-                  <SelectItem value="out-of-stock">Out of Stock</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          {/* Action Bar - Simplified */}
+          <div className="flex justify-between mb-6">
+            <Button onClick={() => setShowAddModal(true)}>
+              <Plus className="mr-2 h-4 w-4" /> Add New Item
+            </Button>
           </div>
           
           {isLoading ? (

@@ -18,50 +18,54 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { Loader2 } from "lucide-react";
 import { Item, updateItemSchema } from "@shared/schema";
 import { z } from "zod";
 import { apiRequest } from "@/lib/queryClient";
 import { queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { generateCategoryOptions } from "@/lib/utils";
+import { useEffect } from "react";
 
+// Add the missing interface
 interface EditItemFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   item: Item;
 }
 
-// Extend schema with validations
-const formSchema = updateItemSchema.extend({
+// Simplified schema with only needed fields
+const formSchema = updateItemSchema.pick({
+  name: true,
+  quantity: true,
+  image_url: true
+}).extend({
   name: z.string().min(2, "Name must be at least 2 characters").max(100, "Name must be less than 100 characters"),
   quantity: z.coerce.number().int().min(0, "Quantity cannot be negative"),
-  notes: z.string().optional(),
-  imageUrl: z.string().url("Must be a valid URL").or(z.literal("")).optional(),
+  image_url: z.string().url("Must be a valid URL").or(z.literal("")).optional(),
 });
 
 export default function EditItemForm({ open, onOpenChange, item }: EditItemFormProps) {
   const { toast } = useToast();
-  const categoryOptions = generateCategoryOptions();
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: item.name,
-      category: item.category,
-      quantity: item.quantity,
-      notes: item.notes || "",
-      imageUrl: item.imageUrl || "",
-    },
+      name: '',
+      quantity: 0,
+      image_url: ''
+    }
   });
+
+  // Reset form when item changes
+  useEffect(() => {
+    if (open && item) {  // Only reset when dialog is open and item exists
+      form.reset({
+        name: item.name,
+        quantity: item.quantity,
+        image_url: item.image_url || ""
+      });
+    }
+  }, [item, open, form.reset]); 
   
   const updateItemMutation = useMutation({
     mutationFn: async (data: z.infer<typeof formSchema>) => {
@@ -92,8 +96,7 @@ export default function EditItemForm({ open, onOpenChange, item }: EditItemFormP
   
   const onDialogOpenChange = (open: boolean) => {
     if (!open) {
-      // Reset form if dialog is closed
-      form.reset();
+      form.reset();  // Clear form when closing
     }
     onOpenChange(open);
   };
@@ -108,50 +111,11 @@ export default function EditItemForm({ open, onOpenChange, item }: EditItemFormP
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-2">
             <input type="hidden" name="id" value={item.id} />
             
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Item Name</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="category"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Category</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a category" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {categoryOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
             <div className="grid grid-cols-2 gap-4">
               <FormItem>
                 <FormLabel>Item ID</FormLabel>
                 <FormControl>
-                  <Input value={item.itemId} disabled />
+                  <Input value={item.id} disabled />
                 </FormControl>
               </FormItem>
               
@@ -172,12 +136,12 @@ export default function EditItemForm({ open, onOpenChange, item }: EditItemFormP
             
             <FormField
               control={form.control}
-              name="notes"
+              name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Notes (Optional)</FormLabel>
+                  <FormLabel>Item Name</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="Add any additional notes" {...field} />
+                    <Input {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -186,10 +150,10 @@ export default function EditItemForm({ open, onOpenChange, item }: EditItemFormP
             
             <FormField
               control={form.control}
-              name="imageUrl"
+              name="image_url"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Image URL (Optional)</FormLabel>
+                  <FormLabel>Image URL</FormLabel>
                   <FormControl>
                     <Input placeholder="Enter image URL" {...field} />
                   </FormControl>

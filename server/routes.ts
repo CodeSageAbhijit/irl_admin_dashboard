@@ -3,6 +3,8 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertItemSchema, updateItemSchema } from "@shared/schema";
 import { ZodError } from "zod";
+import { FirebaseStorage } from "./firestorage";
+
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // put application routes here
@@ -62,34 +64,71 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // PATCH update an existing inventory item
-  apiRouter.patch("/items/:id", async (req, res) => {
-    try {
-      const id = parseInt(req.params.id);
-      
-      if (isNaN(id)) {
-        return res.status(400).json({ message: "Invalid item ID" });
-      }
-      
-      const validatedData = updateItemSchema.parse(req.body);
-      const updatedItem = await storage.updateItem(id, validatedData);
-      
-      if (!updatedItem) {
-        return res.status(404).json({ message: "Item not found" });
-      }
-      
-      res.json(updatedItem);
-    } catch (error) {
-      if (error instanceof ZodError) {
-        res.status(400).json({ 
-          message: "Invalid item data", 
-          errors: error.errors 
-        });
-      } else {
-        res.status(500).json({ message: "Error updating inventory item" });
-      }
+  // import { ZodError } from "zod";
+
+apiRouter.patch("/items/:id", async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    
+    if (isNaN(id)) {
+      return res.status(400).json({ 
+        message: "Invalid item ID",
+        details: `Received ID: ${req.params.id}`
+      });
     }
-  });
+
+    const requestData = {
+      name: req.body.name,
+      quantity: req.body.quantity,
+      image_url: req.body.imageUrl || req.body.image_url || null
+    };
+
+    // Then validate
+    const validatedData = updateItemSchema.parse(requestData);
+
+    const updatedItem = await storage.updateItem(id, validatedData);
+    
+    if (!updatedItem) {
+      console.error(`Item not found: ${id}`);
+      return res.status(404).json({ 
+        message: "Item not found",
+        itemId: id
+      });
+    }
+
+    // Log successful update
+    console.log(`Successfully updated item ${id}:`, updatedItem);
+    
+    return res.json(updatedItem);
+
+  } catch (error) {
+    console.error("Error in PATCH /items/:id:", error);
+
+    if (error instanceof ZodError) {
+      return res.status(400).json({ 
+        message: "Invalid item data", 
+        errors: error.errors.map(e => ({
+          path: e.path.join('.'),
+          message: e.message
+        })),
+        receivedData: req.body
+      });
+    }
+
+    // Handle specific database errors if you're using a DB
+    // if (error instanceof SomeDatabaseError) {
+    //   return res.status(500).json({
+    //     message: "Database error",
+    //     details: error.message
+    //   });
+    // }
+
+    return res.status(500).json({ 
+      message: "Internal server error",
+      // error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+});
   
   // DELETE an inventory item
   apiRouter.delete("/items/:id", async (req, res) => {

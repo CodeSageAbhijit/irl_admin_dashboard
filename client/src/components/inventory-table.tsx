@@ -19,10 +19,9 @@ import {
   Package
 } from "lucide-react";
 import { Item } from "@shared/schema";
-import { formatDate, getStatusColor, getCategoryColor } from "@/lib/utils";
 
 type SortDirection = "asc" | "desc";
-type SortField = "id" | "name" | "category" | "quantity" | "status" | "lastUpdated";
+type SortField = "id" | "name" | "quantity"; // Only keep relevant fields
 
 interface InventoryTableProps {
   items: Item[];
@@ -65,23 +64,15 @@ export default function InventoryTable({ items, onEdit, onDelete }: InventoryTab
   // Sort items
   const sortedItems = [...items].sort((a, b) => {
     let comparison = 0;
-    
+  
     if (sortField === "id") {
-      comparison = a.itemId.localeCompare(b.itemId);
+      comparison = (a.id || 0) - (b.id || 0);
     } else if (sortField === "name") {
-      comparison = a.name.localeCompare(b.name);
-    } else if (sortField === "category") {
-      comparison = a.category.localeCompare(b.category);
+      comparison = (a.name || "").localeCompare(b.name || "");
     } else if (sortField === "quantity") {
       comparison = a.quantity - b.quantity;
-    } else if (sortField === "status") {
-      comparison = a.status.localeCompare(b.status);
-    } else if (sortField === "lastUpdated") {
-      const dateA = new Date(a.lastUpdated).getTime();
-      const dateB = new Date(b.lastUpdated).getTime();
-      comparison = dateA - dateB;
     }
-    
+  
     return sortDirection === "asc" ? comparison : -comparison;
   });
   
@@ -124,28 +115,10 @@ export default function InventoryTable({ items, onEdit, onDelete }: InventoryTab
                   {renderSortIcon("name")}
                 </div>
               </TableHead>
-              <TableHead className="cursor-pointer hover:text-primary" onClick={() => handleSort("category")}>
-                <div className="flex items-center">
-                  <span>Category</span>
-                  {renderSortIcon("category")}
-                </div>
-              </TableHead>
               <TableHead className="cursor-pointer hover:text-primary" onClick={() => handleSort("quantity")}>
                 <div className="flex items-center">
                   <span>Quantity</span>
                   {renderSortIcon("quantity")}
-                </div>
-              </TableHead>
-              <TableHead className="cursor-pointer hover:text-primary" onClick={() => handleSort("status")}>
-                <div className="flex items-center">
-                  <span>Status</span>
-                  {renderSortIcon("status")}
-                </div>
-              </TableHead>
-              <TableHead className="cursor-pointer hover:text-primary" onClick={() => handleSort("lastUpdated")}>
-                <div className="flex items-center">
-                  <span>Last Updated</span>
-                  {renderSortIcon("lastUpdated")}
                 </div>
               </TableHead>
               <TableHead className="text-right">Actions</TableHead>
@@ -154,8 +127,11 @@ export default function InventoryTable({ items, onEdit, onDelete }: InventoryTab
           <TableBody>
             {paginatedItems.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={9} className="text-center py-8">
-                  No inventory items found.
+                <TableCell colSpan={6} className="text-center py-8">
+                  <div className="flex flex-col items-center justify-center gap-2">
+                    <Package className="h-8 w-8 text-gray-400" />
+                    <p className="text-gray-500">No inventory items found</p>
+                  </div>
                 </TableCell>
               </TableRow>
             ) : (
@@ -169,10 +145,10 @@ export default function InventoryTable({ items, onEdit, onDelete }: InventoryTab
                     />
                   </TableCell>
                   <TableCell>
-                    {item.imageUrl ? (
+                    {item.image_url ? (
                       <div className="w-10 h-10 relative rounded overflow-hidden">
                         <img 
-                          src={item.imageUrl} 
+                          src={item.image_url} 
                           alt={item.name} 
                           className="w-full h-full object-cover"
                           onError={(e) => {
@@ -195,37 +171,28 @@ export default function InventoryTable({ items, onEdit, onDelete }: InventoryTab
                       </div>
                     )}
                   </TableCell>
-                  <TableCell className="font-medium">#{item.itemId}</TableCell>
+                  <TableCell className="font-medium">#{item.id}</TableCell>
                   <TableCell>{item.name}</TableCell>
-                  <TableCell>
-                    <span className={`px-2 inline-flex text-xs leading-5 font-medium rounded-full ${getCategoryColor(item.category)}`}>
-                      {item.category}
-                    </span>
-                  </TableCell>
                   <TableCell>{item.quantity}</TableCell>
-                  <TableCell>
-                    <span className={`px-2 py-1 inline-flex text-xs leading-5 font-medium rounded-full ${getStatusColor(item.status)}`}>
-                      {item.status}
-                    </span>
-                  </TableCell>
-                  <TableCell>{formatDate(item.lastUpdated)}</TableCell>
                   <TableCell className="text-right">
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={() => onEdit(item)}
-                      className="text-primary hover:text-primary-hover"
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      onClick={() => onDelete(item)}
-                      className="text-red-500 hover:text-red-600"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    <div className="flex justify-end gap-2">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => onEdit(item)}
+                        className="text-primary hover:text-primary-hover"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => onDelete(item)}
+                        className="text-red-500 hover:text-red-600"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))

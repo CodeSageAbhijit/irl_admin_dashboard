@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
@@ -19,52 +18,41 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { Loader2 } from "lucide-react";
 import { insertItemSchema } from "@shared/schema";
 import { z } from "zod";
 import { apiRequest } from "@/lib/queryClient";
 import { queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { generateCategoryOptions } from "@/lib/utils";
 
 interface AddItemFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-// Extend schema with validations
-const formSchema = insertItemSchema.extend({
+// Create a new schema without the id field
+const formSchema = insertItemSchema.omit({ id: true }).extend({
   name: z.string().min(2, "Name must be at least 2 characters").max(100, "Name must be less than 100 characters"),
   quantity: z.coerce.number().int().min(0, "Quantity cannot be negative"),
-  notes: z.string().optional(),
-  imageUrl: z.string().url("Must be a valid URL").or(z.literal("")).optional(),
+  image_url: z.string().url("Must be a valid URL").or(z.literal("")).optional(),
 });
+
+type FormValues = z.infer<typeof formSchema>;
 
 export default function AddItemForm({ open, onOpenChange }: AddItemFormProps) {
   const { toast } = useToast();
-  const categoryOptions = generateCategoryOptions();
   
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      category: "electronics",
       quantity: 0,
-      notes: "",
-      imageUrl: "",
-    },
+      image_url: ""
+    }
   });
-  
+
   const createItemMutation = useMutation({
-    mutationFn: async (data: z.infer<typeof formSchema>) => {
+    mutationFn: async (data: FormValues) => {
       const response = await apiRequest("POST", "/api/items", data);
       return response.json();
     },
@@ -78,7 +66,7 @@ export default function AddItemForm({ open, onOpenChange }: AddItemFormProps) {
       });
       form.reset();
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       toast({
         title: "Error",
         description: error.message || "Failed to create item. Please try again.",
@@ -87,7 +75,7 @@ export default function AddItemForm({ open, onOpenChange }: AddItemFormProps) {
     },
   });
   
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
+  const onSubmit = (data: FormValues) => {
     createItemMutation.mutate(data);
   };
   
@@ -120,40 +108,12 @@ export default function AddItemForm({ open, onOpenChange }: AddItemFormProps) {
               )}
             />
             
-            <FormField
-              control={form.control}
-              name="category"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Category</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a category" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {categoryOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
             <div className="grid grid-cols-2 gap-4">
               <FormItem>
                 <FormLabel>Item ID</FormLabel>
-                <div className="relative">
-                  <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
-                    #INV-
-                  </span>
-                  <Input className="pl-14" disabled placeholder="Auto-generated" />
-                </div>
+                <FormControl>
+                  <Input disabled placeholder="Auto-generated" />
+                </FormControl>
               </FormItem>
               
               <FormField
@@ -173,21 +133,7 @@ export default function AddItemForm({ open, onOpenChange }: AddItemFormProps) {
             
             <FormField
               control={form.control}
-              name="notes"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Notes (Optional)</FormLabel>
-                  <FormControl>
-                    <Textarea placeholder="Add any additional notes" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="imageUrl"
+              name="image_url"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Image URL (Optional)</FormLabel>

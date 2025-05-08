@@ -1,10 +1,15 @@
 import { collection, getDocs, doc, getDoc, updateDoc, query, where, increment } from 'firebase/firestore';
 import { db } from '../../../server/firebase.ts';
-import { Request, ApprovalStatus } from '../types/request';
+
+import {User, Request, ApprovalStatus } from '../types/request';
 
 // Collection reference
 const requestsCollection = collection(db, 'requests');
 const inventoryCollection = collection(db, 'inventory_items');
+
+
+
+
 
 /**
  * Get all requests from Firestore
@@ -67,6 +72,44 @@ export async function updateRequestStatus(
       approval_status: status
     });
 
+    
+
+     // 3. Send push notification
+    //  if (status === 'Approved' && requestData.user_id) {
+    //   try {
+
+    //     const userQuery = query(usersCollection, where('user_id', '==', requestData.user_id));
+    //     const userSnapshot = await getDocs(userQuery);
+
+    //     if (userSnapshot.empty) {
+    //       // console.error('No user found with ID' ${requestData.user_id});
+    //       // print('No user found with ID' ${requestData.user_id})
+    //     } else {
+    //       // Extract the user's FCM token
+    //       const userDoc = userSnapshot.docs[0];
+    //       const userData = userDoc.data();
+    //       const fcmToken = userData.fcm_token;
+    
+    //       if (fcmToken) {
+    //         const message = {
+    //           notification: {
+    //             title: 'Request Approved',
+    //             body: 'Your request #${requestId} has been approved!'
+    //           },
+    //           token: fcmToken
+    //         };
+    
+    //         await admin.messaging().send(message);
+    //         console.log('Successfully sent approval notification');
+    //       } else {
+    //         // console.warn(User ${requestData.user_id} does not have an FCM token);
+    //       }
+    //     }
+    //   } catch (notificationError) {
+    //     console.error('Error sending notification:', notificationError);
+    //   }
+    // }
+
     // 3. If approved, process inventory deductions
     if (status === 'Approved') {
       for (const cartItem of requestData.cart_items) {
@@ -79,7 +122,7 @@ export async function updateRequestStatus(
           const inventorySnapshot = await getDocs(inventoryQuery);
           
           if (inventorySnapshot.empty) {
-            console.warn(`Inventory item ${cartItem.item_id} not found`);
+            console.warn(`Inventory item ${cartItem.id} not found`);
             continue;
           }
 
@@ -88,7 +131,7 @@ export async function updateRequestStatus(
           
           // Validate sufficient quantity
           if (currentQuantity < cartItem.selected_quantity) {
-            console.error(`Insufficient quantity for item ${cartItem.item_id}`);
+            console.error(`Insufficient quantity for item ${cartItem.id}`);
             continue;
           }
 
@@ -97,9 +140,9 @@ export async function updateRequestStatus(
             quantity: increment(-cartItem.selected_quantity)
           });
           
-          console.log(`Deducted ${cartItem.selected_quantity} from item ${cartItem.item_id}`);
+          console.log(`Deducted ${cartItem.selected_quantity} from item ${cartItem.id}`);
         } catch (error) {
-          console.error(`Error updating inventory for item ${cartItem.item_id}:`, error);
+          console.error(`Error updating inventory for item ${cartItem.id}:`, error);
           // Continue with other items even if one fails
         }
       }

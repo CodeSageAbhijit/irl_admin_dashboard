@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/dashboard";
+import ReturnRequests from "@/pages/return-requests";
 import { ThemeProvider } from "@/components/theme-provider";
 import Requests from "@/pages/requests";
 
@@ -14,6 +15,7 @@ function Router() {
       {/* Add pages below */}
       <Route path="/" component={Dashboard} />
       <Route path="/requests" component={Requests} />
+      <Route path="/return-requests" component={ReturnRequests} />
       {/* Fallback to 404 */}
       <Route component={NotFound} />
     </Switch>

@@ -6,7 +6,8 @@ import {
   Truck,
   BarChart, 
   Settings,
-  ClipboardList
+  ClipboardList,
+  RotateCcw
 } from "lucide-react";
 
 type SidebarProps = {
@@ -33,29 +34,13 @@ export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
     },
     
     {
-      label: "Products",
-      icon: Package,
-      href: "/products",
-      active: location === "/products"
-    },
-    {
-      label: "Orders",
-      icon: Truck,
-      href: "/orders",
-      active: location === "/orders"
-    },
-    {
-      label: "Reports",
-      icon: BarChart,
-      href: "/reports",
-      active: location === "/reports"
-    },
-    {
-      label: "Settings",
-      icon: Settings,
-      href: "/settings",
-      active: location === "/settings"
+      label: "Return Requests",
+      icon: RotateCcw,
+      href: "/return-requests",
+      active: location === "/return-requests"
     }
+    
+    
   ];
   
   return (
@@ -65,7 +50,7 @@ export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
       mobileOpen ? "fixed inset-0 h-screen md:relative md:h-auto" : "block"
     )}>
       <div className="p-4 flex items-center justify-between">
-        <h1 className="text-xl font-bold text-primary">InventoryPro</h1>
+        <h1 className="text-xl font-bold text-primary">IRL-Inventory</h1>
         <button 
           className="md:hidden text-gray-500 hover:text-gray-700"
           onClick={() => setMobileOpen(false)}

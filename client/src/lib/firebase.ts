@@ -1,5 +1,5 @@
-import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import { initializeApp, getApps, getApp } from "firebase/app";
+import { initializeFirestore, getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -10,5 +10,8 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app);
+const isNew = getApps().length === 0;
+const app = isNew ? initializeApp(firebaseConfig) : getApp();
+export const db = isNew
+  ? initializeFirestore(app, { experimentalForceLongPolling: true })
+  : getFirestore(app);

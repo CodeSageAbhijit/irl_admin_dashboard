@@ -1,51 +1,54 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-      --background: 0 0% 100%;
---foreground: 20 14.3% 4.1%;
---muted: 60 4.8% 95.9%;
---muted-foreground: 25 5.3% 44.7%;
---popover: 0 0% 100%;
---popover-foreground: 20 14.3% 4.1%;
---card: 0 0% 100%;
---card-foreground: 20 14.3% 4.1%;
---border: 20 5.9% 90%;
---input: 20 5.9% 90%;
---primary: 207 90% 54%;
---primary-foreground: 211 100% 99%;
---secondary: 60 4.8% 95.9%;
---secondary-foreground: 24 9.8% 10%;
---accent: 60 4.8% 95.9%;
---accent-foreground: 24 9.8% 10%;
---destructive: 0 84.2% 60.2%;
---destructive-foreground: 60 9.1% 97.8%;
---ring: 20 14.3% 4.1%;
---radius: 0.5rem;
-  }
-  .dark {
-      --background: 240 10% 3.9%;
---foreground: 0 0% 98%;
---muted: 240 3.7% 15.9%;
---muted-foreground: 240 5% 64.9%;
---popover: 240 10% 3.9%;
---popover-foreground: 0 0% 98%;
---card: 240 10% 3.9%;
---card-foreground: 0 0% 98%;
---border: 240 3.7% 15.9%;
---input: 240 3.7% 15.9%;
---primary: 207 90% 54%;
---primary-foreground: 211 100% 99%;
---secondary: 240 3.7% 15.9%;
---secondary-foreground: 0 0% 98%;
---accent: 240 3.7% 15.9%;
---accent-foreground: 0 0% 98%;
---destructive: 0 62.8% 30.6%;
---destructive-foreground: 0 0% 98%;
---ring: 240 4.9% 83.9%;
---radius: 0.5rem;
-  }
+  --background: 214 32% 96%;       /* #F6F7F9 */
+  --foreground: 213 27% 14%;       /* #1A202C */
+  --muted: 210 25% 92%;
+  --muted-foreground: 213 22% 60%; /* #90A3BF */
+  --popover: 0 0% 100%;
+  --popover-foreground: 213 27% 14%;
+  --card: 0 0% 100%;
+  --card-foreground: 213 27% 14%;
+  --border: 213 28% 91%;           /* #E8EFF6 */
+  --input: 213 28% 91%;
+  --primary: 224 80% 57%;          /* #3563E9 */
+  --primary-foreground: 0 0% 100%;
+  --secondary: 214 32% 96%;
+  --secondary-foreground: 213 27% 14%;
+  --accent: 224 80% 57%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --ring: 224 80% 57%;
+  --radius: 0.625rem;
+}
+
+.dark {
+  --background: 213 27% 10%;
+  --foreground: 0 0% 96%;
+  --muted: 213 20% 16%;
+  --muted-foreground: 213 22% 55%;
+  --popover: 213 22% 12%;
+  --popover-foreground: 0 0% 96%;
+  --card: 213 22% 12%;
+  --card-foreground: 0 0% 96%;
+  --border: 213 20% 20%;
+  --input: 213 20% 20%;
+  --primary: 224 80% 60%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 213 20% 16%;
+  --secondary-foreground: 0 0% 96%;
+  --accent: 224 80% 60%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
+  --ring: 224 80% 60%;
+  --radius: 0.625rem;
+}
 
 @layer base {
   * {
@@ -53,7 +56,60 @@
   }
 
   body {
-    @apply font-sans antialiased bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  }
+
+  ::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #C3D4E9;
+    border-radius: 99px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #90A3BF;
+  }
+}
+
+@layer components {
+  /* Sidebar nav items */
+  .sidebar-nav-item {
+    @apply flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all duration-150;
+  }
+
+  .sidebar-nav-item.active {
+    @apply bg-[#3563E9] text-white;
+  }
+
+  .sidebar-nav-item:not(.active) {
+    @apply text-[#90A3BF] hover:bg-[#F6F7F9] hover:text-[#3563E9];
+  }
+
+  /* Stat cards */
+  .stat-card {
+    @apply bg-white rounded-xl p-5 border border-[#E8EFF6] hover:shadow-md transition-all duration-200;
+  }
+
+  /* Page headings */
+  .page-title {
+    @apply text-xl font-bold text-[#1A202C];
+  }
+
+  .page-subtitle {
+    @apply text-sm font-medium text-[#90A3BF] mt-0.5;
+  }
+
+  /* Primary button */
+  .btn-primary {
+    @apply bg-[#3563E9] text-white hover:bg-[#2851d4] rounded-lg font-semibold text-sm transition-colors;
   }
 }
 

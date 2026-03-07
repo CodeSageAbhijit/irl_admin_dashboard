@@ -1,19 +1,18 @@
 // server/firebase.ts
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-import dotenv from "dotenv";
+// import dotenv from "dotenv";
 
 // Load .env variables, assuming it's in the project root
-dotenv.config();
+// dotenv.config();
 
 const firebaseConfig = {
-  apiKey: process.env.FIREBASE_API_KEY,
-  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.FIREBASE_PROJECT_ID,
-  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.FIREBASE_APP_ID,
-  measurementId: process.env.FIREBASE_MEASUREMENT_ID,
+  apiKey: "AIzaSyBbtT6nNm6-68UyMjkAElIjgAX_Y3137UU",
+  authDomain: "irl-inventory-8ebab.firebaseapp.com",
+  projectId: "irl-inventory-8ebab",
+  storageBucket: "irl-inventory-8ebab.firebasestorage.app",
+  messagingSenderId: "622498137850",
+  appId: "1:622498137850:web:7128867a7e14845cda6b43"
 };
 
 const app = initializeApp(firebaseConfig);

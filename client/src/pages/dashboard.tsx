@@ -21,7 +21,8 @@ export default function Dashboard() {
   const [sidebarMobile, setSidebarMobile] = useState(false);
   
   const { data, isLoading, error } = useQuery<Item[]>({
-    queryKey: ['/api/items'],
+    queryKey: ['firebase/items'],
+    queryFn: () => import('@/services/inventoryService').then(m => m.getItems()),
   });
   
   const items = data || [];

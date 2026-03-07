@@ -21,8 +21,8 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { Item, updateItemSchema } from "@shared/schema";
 import { z } from "zod";
-import { apiRequest } from "@/lib/queryClient";
 import { queryClient } from "@/lib/queryClient";
+import { updateItem } from "@/services/inventoryService";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect } from "react";
 
@@ -69,11 +69,10 @@ export default function EditItemForm({ open, onOpenChange, item }: EditItemFormP
   
   const updateItemMutation = useMutation({
     mutationFn: async (data: z.infer<typeof formSchema>) => {
-      const response = await apiRequest("PATCH", `/api/items/${item.id}`, data);
-      return response.json();
+      return updateItem(item.id, { name: data.name, quantity: data.quantity, image_url: data.image_url || null });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/items"] });
+      queryClient.invalidateQueries({ queryKey: ['firebase/items'] });
       onOpenChange(false);
       toast({
         title: "Item updated",

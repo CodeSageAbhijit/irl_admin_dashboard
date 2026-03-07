@@ -11,8 +11,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Loader2 } from "lucide-react";
 import { Item } from "@shared/schema";
-import { apiRequest } from "@/lib/queryClient";
 import { queryClient } from "@/lib/queryClient";
+import { deleteItem } from "@/services/inventoryService";
 import { useToast } from "@/hooks/use-toast";
 
 interface DeleteItemDialogProps {
@@ -26,10 +26,10 @@ export default function DeleteItemDialog({ open, onOpenChange, item }: DeleteIte
   
   const deleteItemMutation = useMutation({
     mutationFn: async () => {
-      await apiRequest("DELETE", `/api/items/${item.id}`);
+      await deleteItem(item.id);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/items"] });
+      queryClient.invalidateQueries({ queryKey: ['firebase/items'] });
       onOpenChange(false);
       toast({
         title: "Item deleted",

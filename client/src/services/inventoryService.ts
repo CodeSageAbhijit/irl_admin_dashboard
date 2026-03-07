@@ -1,16 +1,48 @@
-import { collection, getDocs, doc, getDoc, updateDoc, query, where } from 'firebase/firestore';
-import { db } from '../../../server/firebase.ts';
+import { collection, getDocs, doc, getDoc, setDoc, updateDoc, deleteDoc, query, where } from 'firebase/firestore';
+import { db } from '../lib/firebase';
 import { CartItem } from '../types/request';
+import type { Item } from '@shared/schema';
 
-// Collection reference
-const inventoryItemsCollection = collection(db, 'inventory_items');
+// Collection reference (shared)
+const itemsCollection = collection(db, 'inventory_items');
+
+export async function getItems(): Promise<Item[]> {
+  const snapshot = await getDocs(itemsCollection);
+  return snapshot.docs.map(d => d.data() as Item);
+}
+
+export async function createItem(data: { name: string; quantity: number; image_url?: string | null }): Promise<Item> {
+  const id = Date.now();
+  const item: Item = {
+    id,
+    name: data.name,
+    quantity: data.quantity ?? 0,
+    image_url: data.image_url ?? null,
+  };
+  await setDoc(doc(itemsCollection, String(id)), item);
+  return item;
+}
+
+export async function updateItem(id: number, data: Partial<{ name: string; quantity: number; image_url: string | null }>): Promise<Item> {
+  const docRef = doc(itemsCollection, String(id));
+  const snapshot = await getDoc(docRef);
+  if (!snapshot.exists()) throw new Error('Item not found');
+  const current = snapshot.data() as Item;
+  const updated: Item = { ...current, ...data };
+  await setDoc(docRef, updated);
+  return updated;
+}
+
+export async function deleteItem(id: number): Promise<void> {
+  await deleteDoc(doc(itemsCollection, String(id)));
+}
 
 /**
  * Find an inventory item by name
  */
 export async function findInventoryItemByName(name: string) {
   try {
-    const q = query(inventoryItemsCollection, where('name', '==', name));
+    const q = query(itemsCollection, where('name', '==', name));
     const snapshot = await getDocs(q);
     
     if (snapshot.empty) {
@@ -32,7 +64,7 @@ export async function findInventoryItemByName(name: string) {
  */
 export async function findInventoryItemById(id: number) {
   try {
-    const q = query(inventoryItemsCollection, where('id', '==', id));
+    const q = query(itemsCollection, where('id', '==', id));
     const snapshot = await getDocs(q);
     
     if (snapshot.empty) {

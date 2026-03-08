@@ -1,5 +1,5 @@
 import { collection, getDocs, doc, getDoc, updateDoc, query, where, increment } from 'firebase/firestore';
-import { db } from '../../../server/firebase.ts';
+import { db } from '../lib/firebase';
 
 import {User, Request, ApprovalStatus } from '../types/request';
 

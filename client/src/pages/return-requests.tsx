@@ -170,7 +170,8 @@ export default function ReturnRequests() {
                   <div className="w-16 h-16 bg-red-50 rounded-xl flex items-center justify-center mx-auto mb-4">
                     <Info className="h-8 w-8 text-red-300" />
                   </div>
-                  <p className="text-red-500 font-semibold mb-4">Failed to load pending return requests</p>
+                  <p className="text-red-500 font-semibold mb-2">Failed to load pending return requests</p>
+                  <p className="text-xs text-red-400 mb-4 font-mono">{String(pendingReturnRequestsQuery.error)}</p>
                   <Button onClick={() => pendingReturnRequestsQuery.refetch()} variant="outline" className="rounded-lg">Retry</Button>
                 </div>
               ) : pendingReturnRequestsQuery.data?.length === 0 ? (
@@ -204,7 +205,8 @@ export default function ReturnRequests() {
                   <div className="w-16 h-16 bg-red-50 rounded-xl flex items-center justify-center mx-auto mb-4">
                     <Info className="h-8 w-8 text-red-300" />
                   </div>
-                  <p className="text-red-500 font-semibold mb-4">Failed to load processed return requests</p>
+                  <p className="text-red-500 font-semibold mb-2">Failed to load processed return requests</p>
+                  <p className="text-xs text-red-400 mb-4 font-mono">{String(processedReturnRequestsQuery.error)}</p>
                   <Button onClick={() => processedReturnRequestsQuery.refetch()} variant="outline" className="rounded-lg">Retry</Button>
                 </div>
               ) : processedReturnRequestsQuery.data?.length === 0 ? (

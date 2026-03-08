@@ -10,12 +10,14 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-const APP_NAME = "irl-client";
-const app = getApps().find(a => a.name === APP_NAME) ?? initializeApp(firebaseConfig, APP_NAME);
+// Use the default app to avoid named-app SDK bugs with long-polling cleanup URLs
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 
 let db: ReturnType<typeof getFirestore>;
 try {
-  db = initializeFirestore(app, { experimentalForceLongPolling: true });
+  // experimentalAutoDetectLongPolling is safer than Force – avoids ad-blocker issues
+  // on getDocs (one-time reads) while still working in constrained environments
+  db = initializeFirestore(app, { experimentalAutoDetectLongPolling: true });
 } catch {
   db = getFirestore(app);
 }
